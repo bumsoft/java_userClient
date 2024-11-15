@@ -11,7 +11,7 @@ import java.net.URLEncoder;
 public class Main {
     String sessionCookie;
 
-    public void register()
+    public void register(String id, String pw)
     {
         try {
             // URL 설정
@@ -24,7 +24,7 @@ public class Main {
             connection.setDoOutput(true);
 
             //쉽게 json으로 보내기위해 jackson 사용함
-            RegisterDto registerDto = new RegisterDto("id1", "pw1");
+            RegisterDto registerDto = new RegisterDto(id, pw);
 
             // Jackson ObjectMapper를 사용해 객체를 JSON으로
             ObjectMapper objectMapper = new ObjectMapper();
@@ -53,7 +53,7 @@ public class Main {
         }
     }
 
-    public void login()
+    public void login(String id, String pw)
     {
         try {
             // URL 설정
@@ -65,12 +65,9 @@ public class Main {
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setDoOutput(true);
 
-            // 자바 객체 생성
-            String username = "id1";
-            String password = "pw1";
 
-            String urlParameters = "username=" + URLEncoder.encode(username, "UTF-8") +
-                    "&password=" + URLEncoder.encode(password, "UTF-8");
+            String urlParameters = "username=" + URLEncoder.encode(id, "UTF-8") +
+                    "&password=" + URLEncoder.encode(pw, "UTF-8");
 
             // username=id1&password=pw1 형식으로 보냄.
 
@@ -124,13 +121,19 @@ public class Main {
             return;
         }
 
-        try {
+        try
+        {
             URL url = new URL("http://localhost:8080/test");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             // HTTP GET 요청 설정
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Cookie", sessionCookie); // 세션 쿠키를 헤더에 포함
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) //200)
+            {
+                System.out.println("로그인 유지 테스트 성공");
+            }
 
             connection.disconnect();
         } catch (Exception e) {
@@ -140,8 +143,8 @@ public class Main {
 
     public static void main(String[] args) {
         Main main = new Main();
-        main.register();
-        main.login();
+        //main.register("id2","pw2");
+        main.login("id1","pw1");
         main.test();
     }
 }
